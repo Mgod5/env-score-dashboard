@@ -1,0 +1,12 @@
+packages:
+  "framer-motion": "For smooth entry animations, progress bars, and hover effects"
+  "date-fns": "For formatting the last updated timestamp nicely"
+  "clsx": "Utility for conditional tailwind classes"
+  "tailwind-merge": "Utility for merging tailwind classes safely"
+  "lucide-react": "For beautiful consistent icons"
+
+images: []
+
+notes:
+  - "Using API client from @workspace/api-client-react for data fetching"
+  - "Assuming dark mode as default for financial terminal aesthetic"

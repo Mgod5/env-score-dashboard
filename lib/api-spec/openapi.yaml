@@ -1,0 +1,166 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: market
+    description: Market data and scoring operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /market/scores:
+    get:
+      operationId: getMarketScores
+      tags: [market]
+      summary: Get instrument environment scores
+      description: Fetches real-time market data and calculates environment scores for trading instruments
+      parameters:
+        - name: instruments
+          in: query
+          required: false
+          description: >
+            JSON-encoded array of instrument configs to score.
+            Each item must have `name`, `displayTicker`, and `polyTicker`.
+            If omitted, defaults to BTCUSD / XAUUSD / EURUSD.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Instrument scores and recommendations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketScoresResponse"
+        "500":
+          description: Error fetching market data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    InstrumentConfig:
+      type: object
+      description: Configuration for a single instrument to score
+      properties:
+        name:
+          type: string
+          description: Short instrument name shown in the UI (e.g., BTCUSD)
+        displayTicker:
+          type: string
+          description: Display ticker label (e.g., BTC-USD)
+        polyTicker:
+          type: string
+          description: Polygon.io ticker symbol (e.g., X:BTCUSD)
+      required:
+        - name
+        - displayTicker
+        - polyTicker
+    InstrumentScore:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Instrument display name
+        ticker:
+          type: string
+          description: Display ticker symbol
+        score:
+          type: number
+          description: Final display score 0-100 (tie-adjusted)
+        rawScore:
+          type: number
+          description: Base environment score before tie-breaking
+        subScore:
+          type: number
+          description: Tie-breaker sub-score 0-10
+        atr:
+          type: number
+          description: Average True Range value
+        adx:
+          type: number
+          description: Average Directional Index value
+        momentum:
+          type: number
+          description: 7-day percentage return
+        avgVolume:
+          type: number
+          description: Average hourly volume over 30 days
+        explanation:
+          type: string
+          description: Short explanation of the score including tie-break reason if applicable
+        riskGuidance:
+          type: string
+          description: Risk management guidance based on score
+        colorCategory:
+          type: string
+          enum: [green, yellow, red]
+          description: Color category based on score
+      required:
+        - name
+        - ticker
+        - score
+        - rawScore
+        - subScore
+        - atr
+        - adx
+        - momentum
+        - avgVolume
+        - explanation
+        - riskGuidance
+        - colorCategory
+    MarketScoresResponse:
+      type: object
+      properties:
+        instruments:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstrumentScore"
+        bestInstrument:
+          type: string
+          description: Name of the highest scoring instrument
+        bestScore:
+          type: number
+          description: Score of the best instrument
+        lastUpdated:
+          type: string
+          description: ISO timestamp of when data was fetched
+      required:
+        - instruments
+        - bestInstrument
+        - bestScore
+        - lastUpdated
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message

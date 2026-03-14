@@ -1,0 +1,15 @@
+Build a Python web dashboard app in Replit using Streamlit that analyzes current market environments to score and recommend trading instruments (BTCUSD, XAUUSD, EURUSD) for an algorithmic trading strategy. The dashboard should fetch real-time H1 (hourly) data from the last 30 days using yfinance, calculate ATR (volatility) and ADX (trend strength) for each, and assign a score from 0-100 based on how well the environment matches the instrument’s ideal conditions:
+•  BTCUSD: High-volatility/speculative environments. Score = min(100, (ATR / 5000 * 50) + (ADX * 2)). Ideal for extreme swings (ATR >5000, ADX >20), driven by news/hype.
+•  XAUUSD: Safe-haven/trend-driven environments. Score = min(100, (ATR / 2 * 30) + (ADX * 3.5)). Ideal for uncertainty (moderate ATR 1-3, strong ADX >25), like geopolitical risks.
+•  EURUSD: Low-volatility/steady environments. Score = min(100, 100 - (ATR / 0.005 * 50) + (ADX * 1.5)). Ideal for calm data-driven markets (low ATR <0.01, mild ADX 15-25).
+Display the dashboard with:
+•  A title: ‘Instrument Environment Score Dashboard’
+•  For each instrument: Name, Score (bold), Color-coded bar or text (green for 70-100, yellow 40-69, red <40), Short explanation (e.g., ‘High score due to elevated volatility matching BTC’s speculative nature; take high risk by increasing lot sizes.’).
+•  Risk guidance: ‘Higher score = more risk to take (e.g., 92 = high risk/aggressive MM, 50 = low risk/conservative).’
+•  A recommendation: ‘Best instrument: [Highest scoring one] - Run this in the algo.’
+•  Refresh button to re-fetch data.
+•  Use yfinance tickers: ‘BTC-USD’ for BTCUSD, ‘GC=F’ for XAUUSD (gold proxy), ‘EURUSD=X’ for EURUSD.
+•  Implement ATR and ADX using pandas_ta or manual calculations if ta-lib not available.
+•  Make it run as a Streamlit app (import streamlit as st); include error handling for data fetch.
+•  Style with Streamlit components: Use st.metric for scores, st.progress for bars (colored via CSS if needed), st.write for explanations.
+Output the full code ready to run in Replit’s main.py.”
